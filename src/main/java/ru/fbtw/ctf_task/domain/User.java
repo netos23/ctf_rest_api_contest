@@ -7,29 +7,26 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.*;
+
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
-@Entity
-@Table(name = "usr")
+
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class User implements UserDetails {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	Long id;
 
 	String username;
 	String password;
 	boolean isActive;
 
-	@ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
-	@CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
-	@Enumerated(EnumType.STRING)
 	Set<Role> roles;
 
+	public User() {
+		roles = new HashSet<>();
+	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -7,32 +7,33 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.fbtw.ctf_task.domain.Role;
 import ru.fbtw.ctf_task.domain.User;
-import ru.fbtw.ctf_task.repo.UserRepo;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class UserService implements UserDetailsService {
 
 
-	private final UserRepo userRepo;
+	private final Map<String, User> userRepo;
 	private final PasswordEncoder passwordEncoder;
 
-	public UserService(UserRepo userRepo, PasswordEncoder passwordEncoder) {
-		this.userRepo = userRepo;
+	public UserService(PasswordEncoder passwordEncoder) {
 		this.passwordEncoder = passwordEncoder;
+		userRepo = new HashMap<>();
 	}
 
 	@Override
 	public User loadUserByUsername(String username) throws UsernameNotFoundException {
-		return userRepo.findUserByUsername(username);
+		return userRepo.get(username);
 	}
 
 	public void addUser(User user) {
 		user.setActive(true);
 		user.setRoles(Collections.singleton(Role.USER));
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		userRepo.save(user);
+		userRepo.put(user.getUsername(), user);
 	}
 
 	public User findByLoginAndPassword(String login, String password) {
